@@ -24,7 +24,7 @@ db.connect((err) => {
     console.log("Connected to MySQL database");
   }
 });
-
+// signup
 app.post("/signup", async (req, res) => {
   const { name, email, password } = req.body;
   if (!name || !email || !password) {
@@ -43,6 +43,7 @@ app.post("/signup", async (req, res) => {
   }
 });
 
+//login
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
@@ -62,4 +63,27 @@ app.post("/login", async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: "Error during login" });
   }
+});
+
+
+// to delete account
+app.delete('/delete/:id', (req, res) => {
+  const userId = req.params.id;
+  const sql = 'DELETE FROM user WHERE id = ?';
+
+  db.query(sql, [userId], (err, result) => {
+      if (err) {
+          return res.status(500).json({ message: 'Server error', error: err.message });
+      }
+      if (result.affectedRows === 0) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+      res.json({ message: 'User deleted successfully' });
+  });
+});
+
+
+// Start server
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
